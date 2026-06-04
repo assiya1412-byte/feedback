@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета обратной связи по обучению</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #22263a;
+    --border: #2e3347;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e8eaf6;
+    --text2: #9198b4;
+    --text3: #5c6380;
+    --success: #00d4aa;
+    --warning: #ffd166;
+    --danger: #ff6b6b;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 16px 0;
+    margin-right: auto;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-tab {
+    padding: 18px 20px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* PAGES */
+  .page { display: none; padding: 32px 24px; max-width: 820px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* HEADINGS */
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 28px; }
+
+  /* CARD */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-sm { padding: 16px 20px; }
+
+  /* FORM */
+  .form-group { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+  }
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color .2s;
+    font-family: inherit;
+  }
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--accent);
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  select option { background: var(--bg3); }
+
+  /* STAR RATING */
+  .stars {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .star-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 16px;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .star-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+  .star-btn.selected { background: rgba(255,209,102,0.15); border-color: var(--accent4); color: var(--accent4); }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #7c75ff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,99,255,0.4); }
+  .btn-danger { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid var(--danger); }
+  .btn-danger:hover { background: rgba(255,107,107,0.25); }
+  .btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text2); }
+  .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--success);
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    z-index: 999;
+    transition: transform .3s ease;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  /* STAT CARDS */
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .stat-label { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; }
+  .stat-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+  .stat-sub { font-size: 12px; color: var(--text2); }
+  .stat-green { color: var(--success); }
+  .stat-yellow { color: var(--warning); }
+  .stat-red { color: var(--danger); }
+  .stat-purple { color: var(--accent); }
+
+  /* INDEX CIRCLE */
+  .index-wrap {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 8px 0;
+    flex-wrap: wrap;
+  }
+  .index-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex-shrink: 0;
+    border: 4px solid;
+  }
+  .index-circle .val { font-size: 26px; font-weight: 700; }
+  .index-circle .lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
+
+  /* CHART WRAP */
+  .chart-wrap { position: relative; height: 240px; }
+  .chart-wrap-sm { position: relative; height: 180px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--bg3);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-green { background: rgba(0,212,170,0.15); color: var(--success); }
+  .badge-yellow { background: rgba(255,209,102,0.15); color: var(--warning); }
+  .badge-red { background: rgba(255,107,107,0.15); color: var(--danger); }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .progress-bar-label { font-size: 13px; color: var(--text2); min-width: 140px; }
+  .progress-bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+  .progress-bar-val { font-size: 13px; font-weight: 600; min-width: 36px; text-align: right; }
+
+  /* RECOMMENDATIONS */
+  .rec-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .rec-item:last-child { border-bottom: none; }
+  .rec-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .rec-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .rec-desc { font-size: 13px; color: var(--text2); }
+
+  /* COMMENTS */
+  .comment-item {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--accent);
+  }
+  .comment-meta { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+  .comment-text { font-size: 14px; color: var(--text2); font-style: italic; }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text3);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* SCORE STARS DISPLAY */
+  .score-stars { color: var(--accent4); letter-spacing: 2px; font-size: 14px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    nav { padding: 0 12px; }
+    .nav-logo { font-size: 15px; }
+    .nav-tab { padding: 14px 10px; font-size: 13px; }
+    .page { padding: 20px 12px; }
+    h1 { font-size: 20px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .card { padding: 16px; }
+    .progress-bar-label { min-width: 100px; font-size: 12px; }
+  }
+  @media (max-width: 420px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .page.active { animation: fadeIn .25s ease; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .filter-bar select, .filter-bar input {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">📊 <span>EduFeedback</span></div>
+  <div class="nav-tab active" onclick="showPage('survey')">Анкета</div>
+  <div class="nav-tab" onclick="showPage('dashboard')">Дашборд</div>
+  <div class="nav-tab" onclick="showPage('responses')">Ответы</div>
+</nav>
+
+<div id="toast">✓ Ответ сохранён!</div>
+
+<!-- ═══════════════ SURVEY PAGE ═══════════════ -->
+<div id="page-survey" class="page active">
+  <h1>Анкета обратной связи</h1>
+  <p class="subtitle">Оцените прошедшее обучение — это займёт 2–3 минуты</p>
+
+  <div class="card">
+    <h2>📋 Общая информация</h2>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Дата обучения</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="form-group">
+        <label>Название программы</label>
+        <input type="text" id="f-program" placeholder="Например: Excel для аналитиков">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Тренер / Преподаватель</label>
+      <input type="text" id="f-trainer" placeholder="ФИО тренера">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⭐ Оценки</h2>
+
+    <div class="form-group">
+      <label>Оценка тренера</label>
+      <div class="stars" id="stars-trainer">
+        <button class="star-btn" data-val="1">⭐ 1</button>
+        <button class="star-btn" data-val="2">⭐ 2</button>
+        <button class="star-btn" data-val="3">⭐ 3</button>
+        <button class="star-btn" data-val="4">⭐ 4</button>
+        <button class="star-btn" data-val="5">⭐ 5</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Актуальность тем</label>
+      <div class="stars" id="stars-relevance">
+        <button class="star-btn" data-val="1">⭐ 1</button>
+        <button class="star-btn" data-val="2">⭐ 2</button>
+        <button class="star-btn" data-val="3">⭐ 3</button>
+        <button class="star-btn" data-val="4">⭐ 4</button>
+        <button class="star-btn" data-val="5">⭐ 5</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Содержание программы</label>
+      <div class="stars" id="stars-content">
+        <button class="star-btn" data-val="1">⭐ 1</button>
+        <button class="star-btn" data-val="2">⭐ 2</button>
+        <button class="star-btn" data-val="3">⭐ 3</button>
+        <button class="star-btn" data-val="4">⭐ 4</button>
+        <button class="star-btn" data-val="5">⭐ 5</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Организация процесса обучения</label>
+      <div class="stars" id="stars-org">
+        <button class="star-btn" data-val="1">⭐ 1</button>
+        <button class="star-btn" data-val="2">⭐ 2</button>
+        <button class="star-btn" data-val="3">⭐ 3</button>
+        <button class="star-btn" data-val="4">⭐ 4</button>
+        <button class="star-btn" data-val="5">⭐ 5</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Комментарии</h2>
+    <div class="form-group">
+      <label>Что понравилось больше всего?</label>
+      <textarea id="f-liked" placeholder="Опишите, что было особенно полезно или интересно..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Что можно улучшить?</label>
+      <textarea id="f-improve" placeholder="Ваши предложения по улучшению программы или процесса..."></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="submitSurvey()">✓ Отправить анкету</button>
+    <button class="btn btn-ghost" onclick="resetForm()">↺ Очистить форму</button>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD PAGE ═══════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="section-header">
+    <div>
+      <h1>Дашборд аналитики</h1>
+      <p class="subtitle" style="margin-bottom:0">Сводная статистика по всем ответам</p>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑 Сбросить данные</button>
+  </div>
+
+  <div id="dash-empty" class="empty" style="display:none">
+    <div class="empty-icon">📭</div>
+    <div class="empty-text">Нет данных. Заполните первую анкету!</div>
+  </div>
+
+  <div id="dash-content">
+    <!-- KPI row -->
+    <div class="grid-4" id="kpi-row"></div>
+
+    <!-- Index + Bar chart -->
+    <div class="grid-2" style="margin-top:0">
+      <div class="card">
+        <h3>Индекс удовлетворённости (CSI)</h3>
+        <div class="index-wrap" id="csi-block"></div>
+        <div class="divider" style="margin:14px 0"></div>
+        <div id="csi-desc" style="font-size:13px; color:var(--text2)"></div>
+      </div>
+      <div class="card">
+        <h3>Средние оценки по критериям</h3>
+        <div class="chart-wrap"><canvas id="chart-avg"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Trend chart -->
+    <div class="card">
+      <h3>Динамика оценок по дате обучения</h3>
+      <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+    </div>
+
+    <!-- Distribution + Programs -->
+    <div class="grid-2">
+      <div class="card">
+        <h3>Распределение по программам</h3>
+        <div class="chart-wrap-sm"><canvas id="chart-programs"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Оценки тренеров</h3>
+        <div id="trainers-list"></div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card">
+      <h3>🔍 Анализ комментариев и рекомендации</h3>
+      <div id="recommendations"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ RESPONSES PAGE ═══════════════ -->
+<div id="page-responses" class="page">
+  <div class="section-header">
+    <div>
+      <h1>Все ответы</h1>
+      <p class="subtitle" style="margin-bottom:0">Полная таблица ответов участников</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <select id="filter-program" onchange="renderResponses()">
+      <option value="">Все программы</option>
+    </select>
+    <select id="filter-trainer" onchange="renderResponses()">
+      <option value="">Все тренеры</option>
+    </select>
+  </div>
+
+  <div id="responses-empty" class="empty" style="display:none">
+    <div class="empty-icon">📭</div>
+    <div class="empty-text">Нет ответов. Заполните первую анкету!</div>
+  </div>
+
+  <div id="responses-table-wrap"></div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>💬 Комментарии участников</h3>
+    <div id="comments-list"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA LAYER
+// ═══════════════════════════════════════════
+
+const STORAGE_KEY = 'edufeedback_v1';
+
+const SEED_DATA = [
+  {
+    id: 1,
+    date: '2026-05-12',
+    program: 'Excel для аналитиков',
+    trainer: 'Айгерим Бекова',
+    scores: { trainer: 5, relevance: 4, content: 5, org: 4 },
+    liked: 'Отличные практические примеры, тренер объяснял очень понятно. Хорошая атмосфера на занятиях.',
+    improve: 'Хотелось бы больше времени на практику с реальными данными.'
+  },
+  {
+    id: 2,
+    date: '2026-05-12',
+    program: 'Excel для аналитиков',
+    trainer: 'Айгерим Бекова',
+    scores: { trainer: 4, relevance: 5, content: 4, org: 3 },
+    liked: 'Темы очень актуальные, сразу применимо в работе.',
+    improve: 'Зал был неудобным, плохая вентиляция. Материалы раздали поздно.'
+  },
+  {
+    id: 3,
+    date: '2026-05-20',
+    program: 'Power BI: базовый курс',
+    trainer: 'Данияр Сейткали',
+    scores: { trainer: 5, relevance: 5, content: 5, org: 5 },
+    liked: 'Всё понравилось! Тренер — эксперт, отвечал на любые вопросы. Хорошо структурировано.',
+    improve: 'Нет замечаний, курс отличный.'
+  },
+  {
+    id: 4,
+    date: '2026-05-20',
+    program: 'Power BI: базовый курс',
+    trainer: 'Данияр Сейткали',
+    scores: { trainer: 4, relevance: 4, content: 4, org: 4 },
+    liked: 'Полезный курс, много новых инструментов узнал.',
+    improve: 'Хотелось бы больше примеров из нашей отрасли (финансы/банки).'
+  },
+  {
+    id: 5,
+    date: '2026-05-28',
+    program: 'Эффективная презентация данных',
+    trainer: 'Лаура Нурмухамедова',
+    scores: { trainer: 3, relevance: 4, content: 3, org: 2 },
+    liked: 'Тема полезная, хорошие шаблоны.',
+    improve: 'Тренер читал по слайдам, мало интерактива. Организация слабая — начали с опозданием на 30 мин. Нет практических заданий.'
+  },
+  {
+    id: 6,
+    date: '2026-05-28',
+    program: 'Эффективная презентация данных',
+    trainer: 'Лаура Нурмухамедова',
+    scores: { trainer: 3, relevance: 3, content: 3, org: 2 },
+    liked: 'Раздаточный материал хороший.',
+    improve: 'Слишком много теории, мало практики. Организация слабая. Желательно обновить контент.'
+  }
+];
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // seed
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_DATA));
+  return SEED_DATA;
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const idx = { survey: 0, dashboard: 1, responses: 2 };
+  tabs[idx[name]].classList.add('active');
+
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'responses') renderResponses();
+}
+
+// ═══════════════════════════════════════════
+//  STARS
+// ═══════════════════════════════════════════
+
+const starValues = {};
+document.querySelectorAll('.stars').forEach(group => {
+  const id = group.id;
+  starValues[id] = 0;
+  group.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = +btn.dataset.val;
+      starValues[id] = val;
+      group.querySelectorAll('.star-btn').forEach(b => {
+        b.classList.toggle('selected', +b.dataset.val <= val);
+      });
+    });
+  });
+});
+
+// ═══════════════════════════════════════════
+//  SURVEY SUBMIT
+// ═══════════════════════════════════════════
+
+function submitSurvey() {
+  const date = document.getElementById('f-date').value;
+  const program = document.getElementById('f-program').value.trim();
+  const trainer = document.getElementById('f-trainer').value.trim();
+  const liked = document.getElementById('f-liked').value.trim();
+  const improve = document.getElementById('f-improve').value.trim();
+
+  if (!date || !program || !trainer) {
+    showToast('❌ Заполните дату, программу и тренера', '#ff6b6b');
+    return;
+  }
+  if (!starValues['stars-trainer'] || !starValues['stars-relevance'] ||
+      !starValues['stars-content'] || !starValues['stars-org']) {
+    showToast('❌ Поставьте оценки по всем критериям', '#ff6b6b');
+    return;
+  }
+
+  const data = loadData();
+  const newEntry = {
+    id: Date.now(),
+    date, program, trainer,
+    scores: {
+      trainer: starValues['stars-trainer'],
+      relevance: starValues['stars-relevance'],
+      content: starValues['stars-content'],
+      org: starValues['stars-org']
+    },
+    liked, improve
+  };
+  data.push(newEntry);
+  saveData(data);
+  showToast('✓ Анкета отправлена!', 'var(--success)');
+  resetForm();
+}
+
+function resetForm() {
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-program').value = '';
+  document.getElementById('f-trainer').value = '';
+  document.getElementById('f-liked').value = '';
+  document.getElementById('f-improve').value = '';
+  Object.keys(starValues).forEach(k => { starValues[k] = 0; });
+  document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('selected'));
+}
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || 'var(--success)';
+  t.style.color = (color === '#ff6b6b') ? '#fff' : '#000';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════
+
+let chartAvg = null, chartTrend = null, chartPrograms = null;
+
+function avg(arr) {
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function avgScores(data, key) {
+  return avg(data.map(d => d.scores[key]));
+}
+
+function renderDashboard() {
+  const data = loadData();
+  const empty = document.getElementById('dash-empty');
+  const content = document.getElementById('dash-content');
+
+  if (!data.length) {
+    empty.style.display = 'block';
+    content.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  // CSI = weighted average of all scores → normalized 0-100
+  const allAvg = data.map(d =>
+    (d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4
+  );
+  const csi = Math.round(avg(allAvg) * 20); // 1–5 → 0–100
+
+  // KPI
+  const kpiRow = document.getElementById('kpi-row');
+  kpiRow.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Всего ответов</div>
+      <div class="stat-value stat-purple">${data.length}</div>
+      <div class="stat-sub">участников</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Индекс CSI</div>
+      <div class="stat-value ${csi >= 75 ? 'stat-green' : csi >= 55 ? 'stat-yellow' : 'stat-red'}">${csi}%</div>
+      <div class="stat-sub">удовлетворённость</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Лучший критерий</div>
+      <div class="stat-value stat-green">${bestCriterion(data).score.toFixed(1)}</div>
+      <div class="stat-sub">${bestCriterion(data).name}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Слабый критерий</div>
+      <div class="stat-value ${worstCriterion(data).score < 3.5 ? 'stat-red' : 'stat-yellow'}">${worstCriterion(data).score.toFixed(1)}</div>
+      <div class="stat-sub">${worstCriterion(data).name}</div>
+    </div>
+  `;
+
+  // CSI circle
+  const csiColor = csi >= 75 ? 'var(--success)' : csi >= 55 ? 'var(--warning)' : 'var(--danger)';
+  const csiLabel = csi >= 75 ? 'Хорошо' : csi >= 55 ? 'Удовлетворительно' : 'Требует внимания';
+  const csiDesc = csi >= 75
+    ? 'Участники в целом довольны обучением. Программа эффективна.'
+    : csi >= 55
+    ? 'Есть точки роста. Обратите внимание на слабые критерии.'
+    : 'Низкая удовлетворённость. Необходимы срочные улучшения.';
+  document.getElementById('csi-block').innerHTML = `
+    <div class="index-circle" style="border-color:${csiColor}; color:${csiColor}">
+      <div class="val">${csi}%</div>
+      <div class="lbl">CSI</div>
+    </div>
+    <div>
+      <div style="font-size:18px; font-weight:700; color:${csiColor}; margin-bottom:4px">${csiLabel}</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-track" style="width:200px"><div class="progress-bar-fill" style="width:${csi}%; background:${csiColor}"></div></div>
+      </div>
+      ${renderProgressBars(data)}
+    </div>
+  `;
+  document.getElementById('csi-desc').textContent = csiDesc;
+
+  // Bar chart
+  renderBarChart(data);
+  renderTrendChart(data);
+  renderProgramsChart(data);
+  renderTrainers(data);
+  renderRecommendations(data);
+}
+
+function criterionScores(data) {
+  return {
+    'Тренер': avgScores(data, 'trainer'),
+    'Актуальность тем': avgScores(data, 'relevance'),
+    'Содержание': avgScores(data, 'content'),
+    'Организация': avgScores(data, 'org'),
+  };
+}
+
+function bestCriterion(data) {
+  const s = criterionScores(data);
+  const key = Object.keys(s).reduce((a, b) => s[a] > s[b] ? a : b);
+  return { name: key, score: s[key] };
+}
+function worstCriterion(data) {
+  const s = criterionScores(data);
+  const key = Object.keys(s).reduce((a, b) => s[a] < s[b] ? a : b);
+  return { name: key, score: s[key] };
+}
+
+function renderProgressBars(data) {
+  const s = criterionScores(data);
+  return Object.entries(s).map(([name, val]) => {
+    const pct = (val / 5) * 100;
+    const col = val >= 4 ? 'var(--success)' : val >= 3 ? 'var(--warning)' : 'var(--danger)';
+    return `<div class="progress-bar-wrap" style="margin-bottom:4px">
+      <div class="progress-bar-label" style="font-size:12px;min-width:110px">${name}</div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="progress-bar-val" style="font-size:12px;color:${col}">${val.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderBarChart(data) {
+  const ctx = document.getElementById('chart-avg').getContext('2d');
+  if (chartAvg) chartAvg.destroy();
+  const s = criterionScores(data);
+  chartAvg = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(s),
+      datasets: [{
+        data: Object.values(s),
+        backgroundColor: ['rgba(108,99,255,0.7)', 'rgba(0,212,170,0.7)', 'rgba(255,209,102,0.7)', 'rgba(255,107,107,0.7)'],
+        borderColor: ['#6c63ff', '#00d4aa', '#ffd166', '#ff6b6b'],
+        borderWidth: 2,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#9198b4', font: { size: 11 } }, grid: { color: '#2e3347' } },
+        y: { min: 0, max: 5, ticks: { color: '#9198b4', stepSize: 1 }, grid: { color: '#2e3347' } }
+      }
+    }
+  });
+}
+
+function renderTrendChart(data) {
+  const ctx = document.getElementById('chart-trend').getContext('2d');
+  if (chartTrend) chartTrend.destroy();
+
+  // Group by date
+  const byDate = {};
+  data.forEach(d => {
+    if (!byDate[d.date]) byDate[d.date] = [];
+    byDate[d.date].push((d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4);
+  });
+  const dates = Object.keys(byDate).sort();
+  const avgs = dates.map(dt => +(avg(byDate[dt]).toFixed(2)));
+
+  chartTrend = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dates.map(d => new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })),
+      datasets: [{
+        label: 'Средняя оценка',
+        data: avgs,
+        borderColor: '#6c63ff',
+        backgroundColor: 'rgba(108,99,255,0.1)',
+        pointBackgroundColor: '#6c63ff',
+        pointRadius: 5,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#9198b4', font: { size: 12 } } } },
+      scales: {
+        x: { ticks: { color: '#9198b4' }, grid: { color: '#2e3347' } },
+        y: { min: 1, max: 5, ticks: { color: '#9198b4', stepSize: 1 }, grid: { color: '#2e3347' } }
+      }
+    }
+  });
+}
+
+function renderProgramsChart(data) {
+  const ctx = document.getElementById('chart-programs').getContext('2d');
+  if (chartPrograms) chartPrograms.destroy();
+  const byProgram = {};
+  data.forEach(d => { byProgram[d.program] = (byProgram[d.program] || 0) + 1; });
+  const labels = Object.keys(byProgram);
+  const vals = Object.values(byProgram);
+  chartPrograms = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: vals, backgroundColor: ['rgba(108,99,255,0.8)', 'rgba(0,212,170,0.8)', 'rgba(255,209,102,0.8)', 'rgba(255,107,107,0.8)'], borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { color: '#9198b4', font: { size: 11 }, padding: 12 } } }
+    }
+  });
+}
+
+function renderTrainers(data) {
+  const byTrainer = {};
+  data.forEach(d => {
+    if (!byTrainer[d.trainer]) byTrainer[d.trainer] = [];
+    byTrainer[d.trainer].push(d.scores.trainer);
+  });
+  const el = document.getElementById('trainers-list');
+  el.innerHTML = Object.entries(byTrainer).map(([name, scores]) => {
+    const a = avg(scores);
+    const col = a >= 4 ? 'var(--success)' : a >= 3 ? 'var(--warning)' : 'var(--danger)';
+    const pct = (a / 5) * 100;
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:600">${name}</span>
+        <span style="font-size:13px;font-weight:700;color:${col}">${a.toFixed(1)} / 5</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="progress-bar-track" style="flex:1"><div class="progress-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <span style="font-size:11px;color:var(--text3)">${scores.length} отз.</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderRecommendations(data) {
+  const s = criterionScores(data);
+  const recs = [];
+  const allComments = data.map(d => (d.improve || '') + ' ' + (d.liked || '')).join(' ').toLowerCase();
+
+  // Analyze weak scores
+  if (s['Организация'] < 3.5) {
+    recs.push({
+      icon: '🏢', color: 'rgba(255,107,107,0.15)',
+      title: 'Улучшить организацию обучения',
+      desc: `Средняя оценка организации: ${s['Организация'].toFixed(1)}/5. Проверьте пунктуальность начала занятий, качество аудитории и своевременную выдачу материалов.`
+    });
+  }
+  if (s['Тренер'] < 3.5) {
+    recs.push({
+      icon: '👨‍🏫', color: 'rgba(255,107,107,0.15)',
+      title: 'Работа с тренером',
+      desc: `Оценка тренера: ${s['Тренер'].toFixed(1)}/5. Рекомендуется провести коучинг-сессию по вовлечению аудитории и снижению зависимости от слайдов.`
+    });
+  }
+  if (s['Содержание'] < 3.5) {
+    recs.push({
+      icon: '📚', color: 'rgba(255,209,102,0.15)',
+      title: 'Пересмотр содержания программы',
+      desc: `Оценка содержания: ${s['Содержание'].toFixed(1)}/5. Необходимо обновить контент, добавить актуальные кейсы и практические задания.`
+    });
+  }
+  // Keyword analysis
+  if (allComments.includes('практик') || allComments.includes('заданий')) {
+    recs.push({
+      icon: '💡', color: 'rgba(108,99,255,0.15)',
+      title: 'Больше практики',
+      desc: 'Участники часто просят увеличить долю практических заданий. Рекомендуется соотношение теория/практика = 40%/60%.'
+    });
+  }
+  if (allComments.includes('врем') || allComments.includes('опоздан')) {
+    recs.push({
+      icon: '⏰', color: 'rgba(255,209,102,0.15)',
+      title: 'Соблюдение регламента',
+      desc: 'Упоминания проблем со временем. Введите жёсткий тайм-менеджмент: старт точно по расписанию, таймер на каждый блок.'
+    });
+  }
+  if (allComments.includes('контент') || allComments.includes('обновить')) {
+    recs.push({
+      icon: '🔄', color: 'rgba(0,212,170,0.15)',
+      title: 'Актуализация материалов',
+      desc: 'Участники указывают на устаревший контент. Обновите программу согласно актуальным трендам и запросам бизнеса.'
+    });
+  }
+  if (allComments.includes('отрасл') || allComments.includes('финанс') || allComments.includes('банк')) {
+    recs.push({
+      icon: '🏦', color: 'rgba(0,212,170,0.15)',
+      title: 'Кастомизация под отрасль',
+      desc: 'Участники хотят примеры из своей отрасли. Подготовьте отраслевые кейсы для каждой целевой аудитории.'
+    });
+  }
+  if (!recs.length) {
+    recs.push({
+      icon: '✅', color: 'rgba(0,212,170,0.15)',
+      title: 'Высокий уровень качества',
+      desc: 'Все ключевые показатели в норме. Продолжайте в том же духе и регулярно собирайте обратную связь.'
+    });
+  }
+
+  document.getElementById('recommendations').innerHTML = recs.map(r => `
+    <div class="rec-item">
+      <div class="rec-icon" style="background:${r.color}">${r.icon}</div>
+      <div>
+        <div class="rec-title">${r.title}</div>
+        <div class="rec-desc">${r.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+//  RESPONSES PAGE
+// ═══════════════════════════════════════════
+
+function starStr(n) {
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+function renderResponses() {
+  const data = loadData();
+  const fp = document.getElementById('filter-program').value;
+  const ft = document.getElementById('filter-trainer').value;
+
+  // Fill filters
+  const programs = [...new Set(data.map(d => d.program))];
+  const trainers = [...new Set(data.map(d => d.trainer))];
+  const pfil = document.getElementById('filter-program');
+  const tfil = document.getElementById('filter-trainer');
+  const curP = pfil.value, curT = tfil.value;
+  pfil.innerHTML = '<option value="">Все программы</option>' + programs.map(p => `<option value="${p}" ${p===curP?'selected':''}>${p}</option>`).join('');
+  tfil.innerHTML = '<option value="">Все тренеры</option>' + trainers.map(t => `<option value="${t}" ${t===curT?'selected':''}>${t}</option>`).join('');
+
+  let filtered = data;
+  if (fp) filtered = filtered.filter(d => d.program === fp);
+  if (ft) filtered = filtered.filter(d => d.trainer === ft);
+
+  const emptyEl = document.getElementById('responses-empty');
+  const tableWrap = document.getElementById('responses-table-wrap');
+  const commentsList = document.getElementById('comments-list');
+
+  if (!filtered.length) {
+    emptyEl.style.display = 'block';
+    tableWrap.innerHTML = '';
+    commentsList.innerHTML = '';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  // Table
+  tableWrap.innerHTML = `
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Программа</th>
+              <th>Тренер</th>
+              <th>Тренер ⭐</th>
+              <th>Актуальность</th>
+              <th>Содержание</th>
+              <th>Организация</th>
+              <th>Итог</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.slice().reverse().map(d => {
+              const total = ((d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4);
+              const badge = total >= 4 ? 'badge-green' : total >= 3 ? 'badge-yellow' : 'badge-red';
+              return `<tr>
+                <td style="white-space:nowrap">${new Date(d.date).toLocaleDateString('ru-RU')}</td>
+                <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.program}</td>
+                <td style="white-space:nowrap">${d.trainer}</td>
+                <td><span class="score-stars">${starStr(d.scores.trainer)}</span></td>
+                <td><span class="score-stars">${starStr(d.scores.relevance)}</span></td>
+                <td><span class="score-stars">${starStr(d.scores.content)}</span></td>
+                <td><span class="score-stars">${starStr(d.scores.org)}</span></td>
+                <td><span class="badge ${badge}">${total.toFixed(1)}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  // Comments
+  const withComments = filtered.filter(d => d.improve || d.liked);
+  if (withComments.length) {
+    commentsList.innerHTML = withComments.slice().reverse().map(d => {
+      const parts = [];
+      if (d.liked) parts.push(`<div style="margin-bottom:6px"><span style="color:var(--success);font-weight:600;font-size:12px">👍 ПОНРАВИЛОСЬ:</span><div class="comment-text" style="margin-top:3px">"${d.liked}"</div></div>`);
+      if (d.improve) parts.push(`<div><span style="color:var(--warning);font-weight:600;font-size:12px">💡 УЛУЧШИТЬ:</span><div class="comment-text" style="margin-top:3px">"${d.improve}"</div></div>`);
+      return `
+        <div class="comment-item">
+          <div class="comment-meta">${new Date(d.date).toLocaleDateString('ru-RU')} · ${d.program} · ${d.trainer}</div>
+          ${parts.join('')}
+        </div>
+      `;
+    }).join('');
+  } else {
+    commentsList.innerHTML = '<div style="color:var(--text3);font-size:14px;padding:12px 0">Нет комментариев</div>';
+  }
+}
+
+// ═══════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════
+
+function confirmReset() {
+  if (confirm('Удалить все данные? Это действие нельзя отменить.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderDashboard();
+    showToast('🗑 Данные удалены', '#ff6b6b');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+
+// Set today's date as default
+document.getElementById('f-date').valueAsDate = new Date();
+</script>
+</body>
+</html>
