@@ -340,20 +340,107 @@
   /* SCORE STARS DISPLAY */
   .score-stars { color: var(--accent4); letter-spacing: 2px; font-size: 14px; }
 
+  /* ── BOTTOM NAV (mobile only) ── */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-nav-inner {
+    display: flex;
+    height: 58px;
+  }
+  .bottom-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    transition: color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bottom-tab .bt-icon { font-size: 20px; line-height: 1; }
+  .bottom-tab.active { color: var(--accent); }
+
   /* RESPONSIVE */
   @media (max-width: 640px) {
-    nav { padding: 0 12px; }
-    .nav-logo { font-size: 15px; }
-    .nav-tab { padding: 14px 10px; font-size: 13px; }
-    .page { padding: 20px 12px; }
+    /* hide top nav tabs, show bottom nav */
+    .nav-tab { display: none; }
+    .nav-logo { font-size: 15px; margin-right: 0; }
+    nav { padding: 0 16px; }
+    .bottom-nav { display: block; }
+
+    /* page padding + safe bottom for fixed nav */
+    .page { padding: 16px 12px 80px; }
     h1 { font-size: 20px; }
-    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
-    .grid-4 { grid-template-columns: 1fr 1fr; }
-    .card { padding: 16px; }
-    .progress-bar-label { min-width: 100px; font-size: 12px; }
+    h2 { font-size: 17px; }
+
+    /* prevent iOS auto-zoom on focus */
+    input[type="text"], input[type="date"], select, textarea {
+      font-size: 16px;
+    }
+
+    /* bigger tap targets */
+    .star-btn {
+      padding: 12px 14px;
+      font-size: 15px;
+      min-height: 44px;
+    }
+    .btn { padding: 14px 20px; font-size: 15px; min-height: 48px; }
+    .btn-sm { padding: 10px 14px; font-size: 13px; min-height: 40px; }
+
+    /* grids */
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .card { padding: 14px; }
+    .card h2, .card h3 { margin-bottom: 12px; }
+
+    /* form action buttons full-width on mobile */
+    .form-actions { flex-direction: column; }
+    .form-actions .btn { width: 100%; justify-content: center; }
+
+    /* stat card smaller font */
+    .stat-value { font-size: 26px; }
+    .stat-label { font-size: 11px; }
+
+    /* chart shorter */
+    .chart-wrap { height: 180px; }
+    .chart-wrap-sm { height: 160px; }
+
+    /* section header stack */
+    .section-header { flex-direction: column; align-items: flex-start; }
+
+    /* progress bar label narrower */
+    .progress-bar-label { min-width: 80px; font-size: 12px; }
+
+    /* index wrap stack */
+    .index-wrap { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+    /* filter bar stacked */
+    .filter-bar { flex-direction: column; }
+    .filter-bar select { width: 100%; }
+
+    /* toast above bottom nav */
+    #toast { bottom: 72px; }
   }
-  @media (max-width: 420px) {
-    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+
+  @media (max-width: 380px) {
+    .grid-4 { grid-template-columns: 1fr; }
+    .stars { gap: 4px; }
+    .star-btn { padding: 10px 10px; font-size: 14px; }
   }
 
   /* ANIMATIONS */
@@ -386,6 +473,24 @@
 </nav>
 
 <div id="toast">✓ Ответ сохранён!</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bottom-tab active" id="bt-survey" onclick="showPage('survey')">
+      <div class="bt-icon">📋</div>
+      <div>Анкета</div>
+    </div>
+    <div class="bottom-tab" id="bt-dashboard" onclick="showPage('dashboard')">
+      <div class="bt-icon">📊</div>
+      <div>Дашборд</div>
+    </div>
+    <div class="bottom-tab" id="bt-responses" onclick="showPage('responses')">
+      <div class="bt-icon">📁</div>
+      <div>Ответы</div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════ SURVEY PAGE ═══════════════ -->
 <div id="page-survey" class="page active">
@@ -470,7 +575,7 @@
     </div>
   </div>
 
-  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+  <div class="form-actions" style="display:flex; gap:12px; flex-wrap:wrap;">
     <button class="btn btn-primary" onclick="submitSurvey()">✓ Отправить анкету</button>
     <button class="btn btn-ghost" onclick="resetForm()">↺ Очистить форму</button>
   </div>
@@ -651,10 +756,15 @@ function saveData(data) {
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   const tabs = document.querySelectorAll('.nav-tab');
   const idx = { survey: 0, dashboard: 1, responses: 2 };
   tabs[idx[name]].classList.add('active');
+  const bt = document.getElementById('bt-' + name);
+  if (bt) bt.classList.add('active');
+  // scroll to top on page switch (mobile)
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (name === 'dashboard') renderDashboard();
   if (name === 'responses') renderResponses();
@@ -1087,43 +1197,77 @@ function renderResponses() {
   }
   emptyEl.style.display = 'none';
 
-  // Table
-  tableWrap.innerHTML = `
-    <div class="card" style="padding:0;overflow:hidden">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Программа</th>
-              <th>Тренер</th>
-              <th>Тренер ⭐</th>
-              <th>Актуальность</th>
-              <th>Содержание</th>
-              <th>Организация</th>
-              <th>Итог</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filtered.slice().reverse().map(d => {
-              const total = ((d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4);
-              const badge = total >= 4 ? 'badge-green' : total >= 3 ? 'badge-yellow' : 'badge-red';
-              return `<tr>
-                <td style="white-space:nowrap">${new Date(d.date).toLocaleDateString('ru-RU')}</td>
-                <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.program}</td>
-                <td style="white-space:nowrap">${d.trainer}</td>
-                <td><span class="score-stars">${starStr(d.scores.trainer)}</span></td>
-                <td><span class="score-stars">${starStr(d.scores.relevance)}</span></td>
-                <td><span class="score-stars">${starStr(d.scores.content)}</span></td>
-                <td><span class="score-stars">${starStr(d.scores.org)}</span></td>
-                <td><span class="badge ${badge}">${total.toFixed(1)}</span></td>
-              </tr>`;
+  const isMobile = window.innerWidth <= 640;
+  if (isMobile) {
+    // Card-based layout for mobile
+    tableWrap.innerHTML = filtered.slice().reverse().map(d => {
+      const total = ((d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4);
+      const badge = total >= 4 ? 'badge-green' : total >= 3 ? 'badge-yellow' : 'badge-red';
+      const col = total >= 4 ? 'var(--success)' : total >= 3 ? 'var(--warning)' : 'var(--danger)';
+      return `
+        <div class="card" style="margin-bottom:12px;padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-size:15px;font-weight:700;margin-bottom:2px">${d.program}</div>
+              <div style="font-size:12px;color:var(--text3)">${new Date(d.date).toLocaleDateString('ru-RU')} · ${d.trainer}</div>
+            </div>
+            <span class="badge ${badge}" style="font-size:14px;padding:5px 12px">${total.toFixed(1)}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            ${[['Тренер','trainer'],['Актуальность','relevance'],['Содержание','content'],['Организация','org']].map(([lbl,key]) => {
+              const sc = d.scores[key];
+              const c = sc >= 4 ? 'var(--success)' : sc >= 3 ? 'var(--warning)' : 'var(--danger)';
+              return `<div style="background:var(--bg3);border-radius:6px;padding:8px 10px">
+                <div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">${lbl}</div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <span style="color:var(--accent4);font-size:12px">${'★'.repeat(sc)}${'☆'.repeat(5-sc)}</span>
+                  <span style="font-size:13px;font-weight:700;color:${c}">${sc}</span>
+                </div>
+              </div>`;
             }).join('')}
-          </tbody>
-        </table>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    // Desktop table
+    tableWrap.innerHTML = `
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Программа</th>
+                <th>Тренер</th>
+                <th>Тренер ⭐</th>
+                <th>Актуальность</th>
+                <th>Содержание</th>
+                <th>Организация</th>
+                <th>Итог</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.slice().reverse().map(d => {
+                const total = ((d.scores.trainer + d.scores.relevance + d.scores.content + d.scores.org) / 4);
+                const badge = total >= 4 ? 'badge-green' : total >= 3 ? 'badge-yellow' : 'badge-red';
+                return `<tr>
+                  <td style="white-space:nowrap">${new Date(d.date).toLocaleDateString('ru-RU')}</td>
+                  <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.program}</td>
+                  <td style="white-space:nowrap">${d.trainer}</td>
+                  <td><span class="score-stars">${starStr(d.scores.trainer)}</span></td>
+                  <td><span class="score-stars">${starStr(d.scores.relevance)}</span></td>
+                  <td><span class="score-stars">${starStr(d.scores.content)}</span></td>
+                  <td><span class="score-stars">${starStr(d.scores.org)}</span></td>
+                  <td><span class="badge ${badge}">${total.toFixed(1)}</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
 
   // Comments
   const withComments = filtered.filter(d => d.improve || d.liked);
